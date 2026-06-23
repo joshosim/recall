@@ -11,6 +11,7 @@ import { daysSince, getStatus } from "@/lib/utils";
 export default function DashboardPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selected, setSelected] = useState<Customer | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [search, setSearch] = useState("");
@@ -18,15 +19,32 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetch("/api/customers")
-      .then((r) => r.json())
+      .then(async (r) => {
+        const data = await r.json();
+        if (!r.ok) {
+          throw new Error(data?.error ?? "Failed to load customers");
+        }
+        return data;
+      })
       .then((data) => {
+        if (!Array.isArray(data)) {
+          throw new Error("Customer API returned an unexpected response");
+        }
         setCustomers(data);
+        setLoadError(null);
+      })
+      .catch((error: unknown) => {
+        setCustomers([]);
+        setLoadError(error instanceof Error ? error.message : "Failed to load customers");
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, []);
 
-  const dueCount = useMemo(
-    () => customers?.filter((c) => getStatus(daysSince(c.last_order_date)) === "due").length,
+  const dueCount = useMemo(() =>
+    customers.filter((c) =>
+      getStatus(daysSince(c.last_order_date)) === "due").length,
     [customers]
   );
 
@@ -104,6 +122,13 @@ export default function DashboardPage() {
       <div className="flex flex-1 overflow-hidden">
         {/* Customer list */}
         <main className="flex-1 overflow-y-auto p-5">
+          {loadError && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3.5 mb-4">
+              <p className="text-sm font-bold text-red-400 font-display">Couldn&apos;t load customers</p>
+              <p className="text-xs text-[#8B96B0] mt-0.5">{loadError}</p>
+            </div>
+          )}
+
           {/* Search (all tab only) */}
           {tab === "all" && (
             <div className="flex items-center gap-3 bg-[#131E35] border border-[#1E2B45] rounded-xl px-4 py-2.5 mb-4">
@@ -128,7 +153,7 @@ export default function DashboardPage() {
               <span className="text-2xl">📣</span>
               <div>
                 <p className="text-sm font-bold text-red-400 font-display">Reach out today</p>
-                <p className="text-xs text-[#8B96B0]">{dueCount} customers haven't ordered in 30+ days</p>
+                <p className="text-xs text-[#8B96B0]">{dueCount} customers haven&apos;t ordered in 30+ days</p>
               </div>
             </div>
           )}

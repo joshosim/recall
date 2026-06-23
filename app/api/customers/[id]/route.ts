@@ -3,10 +3,11 @@ import { getCustomerById, updateCustomer, deleteCustomer } from "@/lib/supabase"
 
 export async function GET(
     _req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const customer = await getCustomerById(params.id);
+        const { id } = await params;
+        const customer = await getCustomerById(id);
         if (!customer) {
             return NextResponse.json({ error: "Customer not found" }, { status: 404 });
         }
@@ -19,9 +20,10 @@ export async function GET(
 
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const body = await req.json();
 
         // Only allow safe fields to be updated
@@ -35,7 +37,7 @@ export async function PATCH(
             return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
         }
 
-        const customer = await updateCustomer(params.id, updates);
+        const customer = await updateCustomer(id, updates);
         return NextResponse.json(customer);
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Unknown error";
@@ -45,10 +47,11 @@ export async function PATCH(
 
 export async function DELETE(
     _req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        await deleteCustomer(params.id);
+        const { id } = await params;
+        await deleteCustomer(id);
         return NextResponse.json({ success: true });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Unknown error";
