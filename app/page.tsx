@@ -26,7 +26,7 @@ export default function DashboardPage() {
   }, []);
 
   const dueCount = useMemo(
-    () => customers.filter((c) => getStatus(daysSince(c.last_order_date)) === "due").length,
+    () => customers?.filter((c) => getStatus(daysSince(c.last_order_date)) === "due").length,
     [customers]
   );
 
