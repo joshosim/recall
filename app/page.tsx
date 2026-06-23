@@ -84,8 +84,8 @@ export default function DashboardPage() {
       {/* Top bar */}
       <header className="flex items-center justify-between px-5 py-4 border-b border-[#1E2B45] shrink-0">
         <div>
-          <h1 className="text-lg font-black tracking-tight font-display">
-            <span className="text-[#00E5A0]">Re</span>call
+          <h1 className="text-2xl font-black tracking-tight font-instrument font-display">
+            <span className="text-[#00E5A0] italic pr-0.5">Re</span>call
           </h1>
           <p className="text-[11px] text-[#8B96B0] mt-0.5">
             {customers.length} customers · {dueCount} need follow-up
@@ -179,7 +179,7 @@ export default function DashboardPage() {
           ) : (
             <div className="text-center py-16 px-6">
               <div className="text-4xl mb-4">{tab === "followups" ? "🎉" : "🔍"}</div>
-              <p className="font-bold text-[#8B96B0] font-display mb-1">
+              <p className="font-bold text-3xl italic font-instrument text-[#8B96B0] font-display mb-1">
                 {tab === "followups" ? "All caught up!" : "No results"}
               </p>
               <p className="text-sm text-[#4A5568]">

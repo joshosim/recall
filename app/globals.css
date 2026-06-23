@@ -5,6 +5,7 @@
   --foreground: #171717;
   --font-space-grotesk: 'Space Grotesk', sans-serif;
   --font-inter: 'Inter', sans-serif;
+  --font-instrument: 'Instrument Serif', sans-serif;
 }
 
 @theme inline {
@@ -75,4 +76,8 @@ body {
 
 .font-inter {
   font-family: var(--font-inter);
+}
+
+.font-instrument {
+  font-family: var(--font-instrument);
 }
